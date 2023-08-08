@@ -13,24 +13,27 @@
   if (cell_null?(tree)) { return null(); }
   if (hash == cell_hash(tree)) { return tree; }
   slice s = tree.begin_parse();
-  if (~ s.slice_refs_empty?()) {
-    cell r = s~load_ref();
-    cell b = find_branch_by_hash_impl(hash, r);
+  cell r = null();
+  cell b = null();
+  int refs = s.slice_refs();
+  if (refs > 0) {
+    r = s~load_ref();
+    b = find_branch_by_hash_impl(hash, r);
     if (~ cell_null?(b)) { return b; }
   }
-  if (~ s.slice_refs_empty?()) {
-    cell r = s~load_ref();
-    cell b = find_branch_by_hash_impl(hash, r);
+  if (refs > 1) {
+    r = s~load_ref();
+    b = find_branch_by_hash_impl(hash, r);
     if (~ cell_null?(b)) { return b; }
   }
-  if (~ s.slice_refs_empty?()) {
-    cell r = s~load_ref();
-    cell b = find_branch_by_hash_impl(hash, r);
+  if (refs > 2) {
+    r = s~load_ref();
+    b = find_branch_by_hash_impl(hash, r);
     if (~ cell_null?(b)) { return b; }
   }
-  if (~ s.slice_refs_empty?()) {
-    cell r = s~load_ref();
-    cell b = find_branch_by_hash_impl(hash, r);
+  if (refs > 3) {
+    r = s~load_ref();
+    b = find_branch_by_hash_impl(hash, r);
     if (~ cell_null?(b)) { return b; }
   }
   return null();
