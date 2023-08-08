@@ -21,6 +21,7 @@
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
+  DO NOT COMPILE TO SAVE BUILD TIME!
   return begin_cell().end_cell();
 }
 
