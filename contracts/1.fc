@@ -11,29 +11,29 @@
 
 (cell) find_branch_by_hash_impl(int hash, cell tree) {
   slice s = tree.begin_parse();
-  if (~ s.slice_refs_empty?()) {
+  if (s.slice_refs()) {
     cell r = s~load_ref();
     if (hash == cell_hash(r)) { return r; }
     cell b = find_branch_by_hash_impl(hash, r);
-    if (~ cell_null?(b)) { return b; }
+    if (~ null?(b)) { return b; }
   }
-  if (~ s.slice_refs_empty?()) {
+  if (s.slice_refs()) {
     cell r = s~load_ref();
     if (hash == cell_hash(r)) { return r; }
     cell b = find_branch_by_hash_impl(hash, r);
-    if (~ cell_null?(b)) { return b; }
+    if (~ null?(b)) { return b; }
   }
-  if (~ s.slice_refs_empty?()) {
+  if (s.slice_refs()) {
     cell r = s~load_ref();
     if (hash == cell_hash(r)) { return r; }
     cell b = find_branch_by_hash_impl(hash, r);
-    if (~ cell_null?(b)) { return b; }
+    if (~ null?(b)) { return b; }
   }
-  if (~ s.slice_refs_empty?()) {
+  if (s.slice_refs()) {
     cell r = s~load_ref();
     if (hash == cell_hash(r)) { return r; }
     cell b = find_branch_by_hash_impl(hash, r);
-    if (~ cell_null?(b)) { return b; }
+    if (~ null?(b)) { return b; }
   }
   return null();
 }
