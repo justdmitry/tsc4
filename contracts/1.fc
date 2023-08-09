@@ -10,23 +10,31 @@ forall X -> X tpop(tuple t) asm "TPOP";
 forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
 int tlen(tuple t) asm "TLEN";
 
+const slice one = "1"s;
+
 () recv_internal() {
 }
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  var nodes = empty_tuple();
   if (hash == cell_hash(tree)) { 
     return tree;
   }
+  var nodes = empty_tuple();
+  var dict = new_dict();
   do {
     slice s = tree.begin_parse();
     repeat (s.slice_refs()) {
       tree = s~load_ref();
-      if (hash == cell_hash(tree)) { 
+      var thash = cell_hash(tree);
+      if (hash == thash) { 
         return tree;
       }
-      nodes~tpush(tree);
+      var (_, found) = dict.udict_get?(256, thash);
+      if (~ found) {
+        dict~udict_set(256, thash, one);
+        nodes~tpush(tree);
+      }
     }
     tree = nodes.tlen() ? nodes~tpop() : null();
   } until (null?(tree));
