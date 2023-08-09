@@ -59,6 +59,6 @@ const int zl = "z"u;
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  return caesar_cipher_decrypt(- shift, text);
+  return caesar_cipher_encrypt(- shift, text);
 }
 
