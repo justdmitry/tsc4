@@ -15,9 +15,10 @@ global int hashg;
   slice s = tree.begin_parse();
   repeat (s.slice_refs()) {
     cell r = s~load_ref();
-    if (hashg == cell_hash(r)) { return r; }
-    cell b = find_branch_by_hash_impl(r);
-    if (~ null?(b)) { return b; }
+    if (hashg != cell_hash(r)) { 
+      r = find_branch_by_hash_impl(r);
+    }
+    if (~ null?(r)) { return r; }
   }
   return null();
 }
