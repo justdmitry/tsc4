@@ -9,30 +9,14 @@
 () recv_internal() {
 }
 
-(cell) find_branch_by_hash_impl(int hash, cell tree) {
+global int hashg;
+
+(cell) find_branch_by_hash_impl(cell tree) {
   slice s = tree.begin_parse();
-  if (s.slice_refs()) {
+  repeat (s.slice_refs()) {
     cell r = s~load_ref();
-    if (hash == cell_hash(r)) { return r; }
-    cell b = find_branch_by_hash_impl(hash, r);
-    if (~ null?(b)) { return b; }
-  }
-  if (s.slice_refs()) {
-    cell r = s~load_ref();
-    if (hash == cell_hash(r)) { return r; }
-    cell b = find_branch_by_hash_impl(hash, r);
-    if (~ null?(b)) { return b; }
-  }
-  if (s.slice_refs()) {
-    cell r = s~load_ref();
-    if (hash == cell_hash(r)) { return r; }
-    cell b = find_branch_by_hash_impl(hash, r);
-    if (~ null?(b)) { return b; }
-  }
-  if (s.slice_refs()) {
-    cell r = s~load_ref();
-    if (hash == cell_hash(r)) { return r; }
-    cell b = find_branch_by_hash_impl(hash, r);
+    if (hashg == cell_hash(r)) { return r; }
+    cell b = find_branch_by_hash_impl(r);
     if (~ null?(b)) { return b; }
   }
   return null();
@@ -40,10 +24,8 @@
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  if (null?(tree)) { return begin_cell().end_cell(); }
   if (hash == cell_hash(tree)) { return tree; }
-
-  cell branch = find_branch_by_hash_impl(hash, tree);
-  if (null?(branch)) { return begin_cell().end_cell(); }
-  return branch;
+  hashg = hash;
+  cell branch = find_branch_by_hash_impl(tree);
+  return null?(branch) ? begin_cell().end_cell() : branch;
 }
