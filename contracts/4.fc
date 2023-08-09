@@ -6,6 +6,10 @@
   character should go to the beginning. Return new text encoded in cell.
 -}
 
+forall X -> X tpop(tuple t) asm "TPOP";
+forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
+int tlen(tuple t) asm "TLEN";
+
 const int au = "A"u;
 const int zu = "Z"u;
 const int al = "a"u;
@@ -14,35 +18,43 @@ const int zl = "z"u;
 () recv_internal() {
 }
 
-(cell) copy_and_shift(int shift, slice src, builder dest) {
-  while(src.slice_bits()) {
-    int char = src~load_int(8);
-    if ((char >= au) & (char <= zu)) {
-      dest = dest.store_int(((char - au + shift + 26) % 26) + au, 8);
-    }
-    else {
-      if ((char >= al) & (char <= zl)) {
-        dest = dest.store_int(((char - al + shift + 26) % 26) + al, 8);
-      }
-      else {
-        dest = dest.store_int(char, 8);
-      }
-    }
-    if (src.slice_data_empty?()) {
-      if (src.slice_refs()) {
-        dest = dest.store_ref(copy_and_shift(shift, src~load_ref().begin_parse(), begin_cell()));
-      }
-    }
-  }
-  return dest.end_cell();
-}
-
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
   slice s = text.begin_parse();
   s~skip_bits(32);
-  builder b = begin_cell().store_int(0, 32);
-  return copy_and_shift(shift, s, b);
+  var b = begin_cell().store_int(0, 32);
+  
+  var builders = empty_tuple();
+  builders~tpush(b);
+  
+  while(s.slice_bits()) {
+    int char = s~load_int(8);
+    if ((char >= au) & (char <= zu)) {
+      b = b.store_int(((char - au + shift + 26) % 26) + au, 8);
+    }
+    else {
+      if ((char >= al) & (char <= zl)) {
+        b = b.store_int(((char - al + shift + 26) % 26) + al, 8);
+      }
+      else {
+        b = b.store_int(char, 8);
+      }
+    }
+    if (s.slice_data_empty?() & s.slice_refs()) {
+      s = s~load_ref().begin_parse();
+      b = begin_cell();
+      builders.tpush(b);
+    }
+  }
+  
+  b = builders~tpop();
+  while (builders.tlen()) {
+    var c = b.end_cell();
+    b = builders~tpop();
+    b.store_ref(c);
+  }
+
+  return b.end_cell();
 }
 
 ;; testable
