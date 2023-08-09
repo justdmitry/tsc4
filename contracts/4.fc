@@ -47,9 +47,6 @@ const int zl = "z"u;
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  slice s = text.begin_parse();
-  s~skip_bits(32);
-  builder b = begin_cell().store_int(0, 32);
-  return copy_and_shift(- shift, s, b);
+  return caesar_cipher_decrypt(- shift, text);
 }
 
