@@ -10,7 +10,6 @@
 }
 
 (cell) find_branch_by_hash_impl(int hash, cell tree) {
-  ifnot (tree.cell_depth()) { return null(); }
   slice s = tree.begin_parse();
   if (s.slice_refs()) {
     cell r = s~load_ref();
