@@ -43,7 +43,7 @@ const int zl = "z"u;
     if (s.slice_data_empty?() & s.slice_refs()) {
       s = s~load_ref().begin_parse();
       b = begin_cell();
-      builders.tpush(b);
+      builders~tpush(b);
     }
   }
   
