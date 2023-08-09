@@ -51,7 +51,7 @@ const int zl = "z"u;
   while (builders.tlen()) {
     var c = b.end_cell();
     b = builders~tpop();
-    b.store_ref(c);
+    b = b.store_ref(c);
   }
 
   return b.end_cell();
