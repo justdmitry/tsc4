@@ -10,23 +10,26 @@
 }
 
 global int hashg;
+global cell ret;
 
-(cell) find_branch_by_hash_impl(cell tree) {
+() find_branch_by_hash_impl(cell tree) impure {
   slice s = tree.begin_parse();
-  repeat (s.slice_refs()) {
+  while (s.slice_refs() & null?(ret)) {
     cell r = s~load_ref();
-    if (hashg != cell_hash(r)) { 
-      r = find_branch_by_hash_impl(r);
+    if (hashg == cell_hash(r)) { 
+      ret = r;
     }
-    if (~ null?(r)) { return r; }
+    else {
+      find_branch_by_hash_impl(r);
+    }
   }
-  return null();
 }
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
   if (hash == cell_hash(tree)) { return tree; }
   hashg = hash;
-  cell branch = find_branch_by_hash_impl(tree);
-  return null?(branch) ? begin_cell().end_cell() : branch;
+  ret = null();
+  find_branch_by_hash_impl(tree);
+  return null?(ret) ? begin_cell().end_cell() : ret;
 }
