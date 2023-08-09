@@ -6,27 +6,25 @@
   this branch should be returned. Return empty cell if the branch is not found.
 -}
 
+forall X -> X tpop(tuple t) asm "TPOP";
+forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
+int tlen(tuple t) asm "TLEN";
+
 () recv_internal() {
-}
-
-global int hashg;
-
-(cell) find_branch_by_hash_impl(cell tree) {
-  if (hashg == cell_hash(tree)) { 
-    return tree;
-  }
-  slice s = tree.begin_parse();
-  repeat (s.slice_refs()) {
-    cell r = s~load_ref();
-    r = find_branch_by_hash_impl(r);
-    if (~ null?(r)) { return r; }
-  }
-  return null();
 }
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  hashg = hash;
-  cell branch = find_branch_by_hash_impl(tree);
-  return null?(branch) ? begin_cell().end_cell() : branch;
+  var nodes = empty_tuple();
+  do {
+    if (hash == cell_hash(tree)) { 
+      return tree;
+    }
+    slice s = tree.begin_parse();
+    repeat (s.slice_refs()) {
+      nodes~tpush(s~load_ref());
+    }
+    tree = (nodes.tlen() == 0) ? null() : nodes~tpop();
+  } until (null?(tree));
+  return begin_cell().end_cell();
 }
