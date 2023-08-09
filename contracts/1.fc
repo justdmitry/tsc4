@@ -12,12 +12,13 @@
 global int hashg;
 
 (cell) find_branch_by_hash_impl(cell tree) {
+  if (hashg == cell_hash(tree)) { 
+    return tree;
+  }
   slice s = tree.begin_parse();
   repeat (s.slice_refs()) {
     cell r = s~load_ref();
-    if (hashg != cell_hash(r)) { 
-      r = find_branch_by_hash_impl(r);
-    }
+    r = find_branch_by_hash_impl(r);
     if (~ null?(r)) { return r; }
   }
   return null();
@@ -25,7 +26,6 @@ global int hashg;
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  if (hash == cell_hash(tree)) { return tree; }
   hashg = hash;
   cell branch = find_branch_by_hash_impl(tree);
   return null?(branch) ? begin_cell().end_cell() : branch;
