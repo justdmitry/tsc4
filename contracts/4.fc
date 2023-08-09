@@ -25,7 +25,6 @@ const int zl = "z"u;
   var b = begin_cell().store_int(0, 32);
   
   var builders = empty_tuple();
-  builders~tpush(b);
   
   while(s.slice_bits()) {
     int char = s~load_int(8);
@@ -41,13 +40,12 @@ const int zl = "z"u;
       }
     }
     if (s.slice_data_empty?() & s.slice_refs()) {
+      builders~tpush(b);
       s = s~load_ref().begin_parse();
       b = begin_cell();
-      builders~tpush(b);
     }
   }
   
-  b = builders~tpop();
   while (builders.tlen()) {
     var c = b.end_cell();
     b = builders~tpop();
