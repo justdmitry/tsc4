@@ -18,7 +18,36 @@
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
-  DO NOT COMPILE TO SAVE BUILD TIME!
-  return null();
+  var res = empty_tuple();
+  
+  if (k == 0) {
+    return res;
+  }
+
+  var x = 0;
+  var y = 1;
+  
+  if (n == 0) {
+    res~tpush(x);
+  }
+  
+  if (n <= 1) {
+    res~tpush(y);
+  }
+  
+  var cur = 2;
+  var stop = n + k;
+  
+  while (cur < stop) {
+    var z = x + y;
+    if (cur >= n) {
+      res~tpush(z);
+    }
+    x = y;
+    y = z;
+    cur = cur + 1;
+  }
+  
+  return res;
 }
 
