@@ -16,12 +16,105 @@
 
 -}
 
+int bitsize(int x) asm "BITSIZE";
+int ubitsize(int x) asm "UBITSIZE";
+int pow2(int x) asm "POW2";
+int startsWith?(slice src, slice val) asm "SDPFXREV";
+forall X -> X tpop(tuple t) asm "TPOP";
+forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
+int tlen(tuple t) asm "TLEN";
+
+global int len1;
+global int len2;
+global slice slice1;
+global slice slice2;
+global tuple builders;
+
 () recv_internal() {
 }
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  DO NOT COMPILE TO SAVE BUILD TIME!
-  return begin_cell().end_cell();
+  ~dump(flag);
+  ~dump(value);
+  ~dump(linked_list.begin_parse());
+  
+  len1 = ubitsize(flag);
+  len2 = ubitsize(value);
+  ~dump(len1);
+  ~dump(len2);
+  
+  slice1 = begin_cell().store_uint(flag, len1).end_cell().begin_parse();
+  slice2 = begin_cell().store_uint(value, len2).end_cell().begin_parse();
+  ~dump(slice1);
+  ~dump(slice2);
+
+  builders = empty_tuple();
+
+  var src = linked_list.begin_parse();
+  var nextSrc = src.slice_refs() ? src~load_ref().begin_parse() : null();
+  var b = begin_cell();
+ 
+  while (~ null?(src)) {
+    if (src.slice_bits() >= len1) ;; have enough bit in cell, process them;
+    {
+      if (src.startsWith?(slice1)) {
+        src~skip_bits(len1);
+        b = b.store_slice(slice2);
+      }
+      else {
+        b = b.store_slice(src~load_bits(1));
+      }
+    }
+    else {
+      if (null?(nextSrc)) { ;; no enough bits, and no ref - nothing to check, copy rest and break;
+        b = b.store_slice(src);
+        builders~tpush(b);
+        src = null();
+      }
+      else { ;; current slice is over, nothing to check - recharge buffers;
+        if (src.slice_data_empty?()) {
+          src = nextSrc;
+          nextSrc = src.slice_refs() ? src~load_ref().begin_parse() : null();
+          builders~tpush(b);
+          b = begin_cell();
+        }
+        else { ;; check end of current and start of next
+          if (slice1.startsWith?(src)) {
+            var (slice1sub, _) = slice1.load_bits(src.slice_bits());
+            if (nextSrc.startsWith?(slice1sub)) {
+              var (slice2sub, bits2) = slice2.load_bits(src.slice_bits());
+              b = b.store_slice(bits2);
+              builders~tpush(b);
+              b = begin_cell().store_slice(slice2sub);
+              src = nextSrc;
+              nextSrc = src.slice_refs() ? src~load_ref().begin_parse() : null();
+            }
+            else {
+              b = b.store_slice(src~load_bits(1));
+            }
+          }
+          else {
+            b = b.store_slice(src~load_bits(1));
+          }
+        } 
+      }
+    }
+  }
+  
+  ;;;;;;;;;;;;;;;;;;;;
+  ;; build final cell
+  ;;;;;;;;;;;;;;;;;;;;
+  var b = builders~tpop();
+  while (builders.tlen()) {
+    var c = b.end_cell();
+    b = builders~tpop();
+    b = b.store_ref(c);
+  }
+
+  var dest = b.end_cell();
+  ~dump(dest.begin_parse());
+  
+  return dest;
 }
 

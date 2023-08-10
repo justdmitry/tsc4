@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract } from '@ton-community/sandbox';
-import { Cell, toNano } from 'ton-core';
+import { Cell, toNano, beginCell } from 'ton-core';
 import { Task3 } from '../wrappers/Task3';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
@@ -34,5 +34,15 @@ describe('Task3', () => {
     it('should deploy', async () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to use
+    });
+
+    it('should run 1', async () => {
+         var cells = beginCell().storeInt(8, 64).storeInt(2184, 128).endCell();
+         var found = await task3.getFindAndReplace(8n, 9n, cells);
+    });
+
+    it('should run 2', async () => {
+         var cells = beginCell().storeInt(8, 64).storeInt(2184, 128).storeInt(2, 4).storeRef(beginCell().storeInt(0, 100).endCell()).endCell();
+         var found = await task3.getFindAndReplace(8n, 15n, cells);
     });
 });
