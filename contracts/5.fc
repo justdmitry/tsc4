@@ -29,23 +29,23 @@
   
   if (n == 0) {
     res~tpush(x);
-    k = k - 1;
   }
   
   if (n <= 1) {
     res~tpush(y);
-    k = k - 1;
   }
-    
-  while (k > 0) {
+  
+  var cur = 2;
+  var stop = n + k;
+  
+  while (cur < stop) {
     var z = x + y;
-    if (n <= 2) {
+    if (cur >= n) {
       res~tpush(z);
-      k = k - 1;
     }
     x = y;
     y = z;
-    n = n - 1;
+    cur = cur + 1;
   }
   
   return res;
