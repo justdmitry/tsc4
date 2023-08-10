@@ -10,6 +10,7 @@ const int au = "A"u;
 const int zu = "Z"u;
 const int al = "a"u;
 const int zl = "z"u;
+const int crcl = 26;
 
 () recv_internal() {
 }
@@ -18,16 +19,14 @@ const int zl = "z"u;
   while(src.slice_bits()) {
     int char = src~load_int(8);
     if ((char >= au) & (char <= zu)) {
-      dest = dest.store_int(((char - au + shift + 26) % 26) + au, 8);
+      char = ((char - au + shift) % crcl) + au;
     }
     else {
       if ((char >= al) & (char <= zl)) {
-        dest = dest.store_int(((char - al + shift + 26) % 26) + al, 8);
-      }
-      else {
-        dest = dest.store_int(char, 8);
+        char = ((char - al + shift) % crcl) + al;
       }
     }
+    dest = dest.store_int(char, 8);
     if (src.slice_data_empty?()) {
       if (src.slice_refs()) {
         dest = dest.store_ref(copy_and_shift(shift, src~load_ref().begin_parse(), begin_cell()));
@@ -47,6 +46,6 @@ const int zl = "z"u;
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  return caesar_cipher_encrypt(- shift, text);
+  return caesar_cipher_encrypt(crcl - shift, text);
 }
 
