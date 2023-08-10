@@ -39,10 +39,12 @@ const int zl = "z"u;
         b = b.store_int(char, 8);
       }
     }
-    if (s.slice_data_empty?() & s.slice_refs()) {
-      builders~tpush(b);
-      s = s~load_ref().begin_parse();
-      b = begin_cell();
+    if (s.slice_data_empty?()) {
+      if (s.slice_refs()) {
+        builders~tpush(b);
+        s = s~load_ref().begin_parse();
+        b = begin_cell();
+      }
     }
   }
   
