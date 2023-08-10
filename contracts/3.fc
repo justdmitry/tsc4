@@ -28,6 +28,7 @@ forall X -> X tpop(tuple t) asm "TPOP";
 forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
 int tlen(tuple t) asm "TLEN";
 int min(int x, int y) asm "MIN";
+int max(int x, int y) asm "MAX";
 
 global int len1;
 global int len2;
@@ -87,8 +88,8 @@ global builder current;
   ~dump(value);
   ~dump(linked_list.begin_parse());
   
-  len1 = ubitsize(flag);
-  len2 = ubitsize(value);
+  len1 = max(ubitsize(flag), ubitsize(value));
+  len2 = len1;
   ~dump(len1);
   ~dump(len2);
   
