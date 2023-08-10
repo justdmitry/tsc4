@@ -9,12 +9,41 @@
   After calculating the result matrix, the function should return final result (as tuple).
 -}
 
+forall X -> X tpop(tuple t) asm "TPOP";
+forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
+int tlen(tuple t) asm "TLEN";
+
 () recv_internal() {
 }
 
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
-  DO NOT COMPILE TO SAVE BUILD TIME!
-  return null();
+  var len1 = matrixA.tlen();
+  var len12 = matrixB.tlen();
+  var len2 = matrixB.at(0).tlen();
+  var res = empty_tuple();
+  
+  var x = 0;
+  repeat(len1) {
+    var row = matrixA.at(x);
+    var y = 0;
+    var resrow = empty_tuple();
+    repeat(len2) {
+      var val = 0;
+      var xx = 0;
+      repeat(len12) {
+        var a = row.at(xx);
+        var b = matrixB.at(xx).at(y);
+        val = val + (a * b);
+        xx = xx + 1;
+      }
+      resrow~tpush(val);
+      y = y + 1;
+    }
+    res~tpush(resrow);
+    x = x + 1;
+  }
+  
+  return res;
 }
 
