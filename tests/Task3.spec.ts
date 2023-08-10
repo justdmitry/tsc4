@@ -43,6 +43,30 @@ describe('Task3', () => {
 
     it('should run 2', async () => {
          var cells = beginCell().storeInt(8, 64).storeInt(2184, 128).storeInt(2, 4).storeRef(beginCell().storeInt(0, 100).endCell()).endCell();
-         var found = await task3.getFindAndReplace(8n, 15n, cells);
+         var found = await task3.getFindAndReplace(8n, 31n, cells);
+    });
+
+    it('should run 3', async () => {
+         var cells = beginCell()
+                       .storeInt(-1, 256).storeInt(-1, 256).storeInt(-1, 256).storeInt(-1, 255)
+                       .storeRef(beginCell()
+                                   .storeInt(-1, 256).storeInt(-1, 256).storeInt(-1, 256).storeInt(-1, 255)
+                                   .storeRef(beginCell().storeInt(-1, 256).storeInt(-1, 256).storeInt(-1, 256).storeInt(-1, 255).endCell())
+                                   .endCell())
+                       .endCell();
+         var found = await task3.getFindAndReplace(1n, 4n, cells);
+    });
+
+    it('should run 4', async () => {
+         var cells = beginCell()
+                       .storeInt(-1, 256).storeInt(0, 256).storeInt(-1, 256).storeInt(0, 244).storeUint(1291, 11)
+                       .storeRef(beginCell()
+                                   .storeUint(10815, 14).storeInt(0, 256).storeInt(-1, 256).storeInt(0, 255)
+                                   //.storeRef(beginCell().storeInt(-1, 256).storeInt(-1, 256).storeInt(-1, 256).storeInt(-1, 255).endCell())
+                                   .endCell())
+                       .endCell();
+         console.log(cells.toString());
+         var found = await task3.getFindAndReplace(373n, 511n, cells);
+         console.log(found.toString());
     });
 });
