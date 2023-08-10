@@ -24,19 +24,18 @@
     return res;
   }
 
-  var x = 0;
-  var y = 1;
-  
   if (n == 0) {
-    res~tpush(x);
+    res~tpush(0);
   }
   
   if (n <= 1) {
-    res~tpush(y);
+    res~tpush(1);
   }
   
-  var cur = 2;
   var stop = n + k;
+  var cur = 2;
+  var x = 0;
+  var y = 1;
   
   while (cur < stop) {
     var z = x + y;
