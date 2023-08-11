@@ -36,14 +36,34 @@ describe('Task3', () => {
         // blockchain and task3 are ready to use
     });
 
-    it('should run 1', async () => {
+    it('shound run norm', async () => {
          var cells = beginCell().storeInt(8, 64).storeInt(2184, 128).endCell();
          var found = await task3.getFindAndReplace(8n, 9n, cells);
+         console.log(found.toString());
     });
 
-    it('should run 2', async () => {
-         var cells = beginCell().storeInt(8, 64).storeInt(2184, 128).storeInt(2, 4).storeRef(beginCell().storeInt(0, 100).endCell()).endCell();
+    it('should run empty', async () => {
+         var cells = beginCell().endCell();
          var found = await task3.getFindAndReplace(8n, 31n, cells);
+         console.log(found.toString());
+    });
+
+    it('should run short', async () => {
+         var cells = beginCell().storeInt(1,3).endCell();
+         var found = await task3.getFindAndReplace(8n, 31n, cells);
+         console.log(found.toString());
+    });
+
+    it('should run deep', async () => {
+         var cells = beginCell()
+                       .storeRef(beginCell()
+                                   .storeRef(beginCell()
+                                               .storeRef(beginCell().storeInt(-1, 256).endCell())
+                                               .endCell())
+                                   .endCell())
+                       .endCell();
+         var found = await task3.getFindAndReplace(1n, 4n, cells);
+         console.log(found.toString());
     });
 
     it('should run 3', async () => {

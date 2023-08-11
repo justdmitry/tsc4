@@ -98,6 +98,9 @@ global builder current;
   ~dump(slice2);
 
   source = linked_list.begin_parse();
+  if (source.slice_empty?()) {
+    return begin_cell().end_cell();
+  }
   builders = empty_tuple();
   current = begin_cell();
   
