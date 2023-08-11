@@ -83,24 +83,18 @@ global builder current;
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  ~dump(flag);
-  ~dump(value);
-  ~dump(linked_list.begin_parse());
-  
-  len1 = ubitsize(flag);
-  len2 = ubitsize(value);
-  ~dump(len1);
-  ~dump(len2);
-  
-  slice1 = begin_cell().store_uint(flag, len1).end_cell().begin_parse();
-  slice2 = begin_cell().store_uint(value, len2).end_cell().begin_parse();
-  ~dump(slice1);
-  ~dump(slice2);
 
   source = linked_list.begin_parse();
   if (source.slice_empty?()) {
     return begin_cell().end_cell();
   }
+
+  len1 = ubitsize(flag);
+  len2 = ubitsize(value);
+  slice1 = begin_cell().store_uint(flag, len1).end_cell().begin_parse();
+
+  slice2 = begin_cell().store_uint(value, len2).end_cell().begin_parse();
+
   builders = empty_tuple();
   current = begin_cell();
   
@@ -138,7 +132,6 @@ global builder current;
   }
 
   var dest = b.end_cell();
-  ~dump(dest.begin_parse());
   
   return dest;
 }
