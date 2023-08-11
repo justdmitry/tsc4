@@ -25,9 +25,9 @@ int tlen(tuple t) asm "TLEN";
   
   var x = 0;
   repeat(len1) {
+    var resrow = empty_tuple();
     var row = matrixA.at(x);
     var y = 0;
-    var resrow = empty_tuple();
     repeat(len2) {
       var val = 0;
       var xx = 0;
