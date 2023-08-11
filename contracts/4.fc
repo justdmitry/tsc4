@@ -12,16 +12,10 @@ const int al = "a"u;
 const int zl = "z"u;
 const int crcl = 26;
 
-forall X -> X tpop(tuple t) asm "TPOP";
-forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
-int tlen(tuple t) asm "TLEN";
-
-global tuple builders;
-
 () recv_internal() {
 }
 
-() copy_and_shift(int shift, slice src, builder dest) impure {
+(cell) copy_and_shift(int shift, slice src, builder dest) {
   while(src.slice_bits()) {
     int char = src~load_int(8);
     if ((char >= au) & (char <= zu)) {
@@ -34,29 +28,18 @@ global tuple builders;
     }
     dest = dest.store_int(char, 8);
   }
-  builders~tpush(dest);
   if (src.slice_refs()) {
-    copy_and_shift(shift, src~load_ref().begin_parse(), begin_cell());
+    dest = dest.store_ref(copy_and_shift(shift, src~load_ref().begin_parse(), begin_cell()));
   }
+  return dest.end_cell();
 }
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) inline method_id {
   slice s = text.begin_parse();
   s~skip_bits(32);
-  var b = begin_cell().store_int(0, 32);
-  builders = empty_tuple();
-  
-  copy_and_shift(shift, s, b);
-  
-  var b = builders~tpop();
-  repeat (builders.tlen()) {
-    var c = b.end_cell();
-    b = builders~tpop();
-    b = b.store_ref(c);
-  }
-
-  return b.end_cell();
+  builder b = begin_cell().store_int(0, 32);
+  return copy_and_shift(shift, s, b);
 }
 
 ;; testable
