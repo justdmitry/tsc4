@@ -51,7 +51,7 @@ global builder current;
 
   var b = begin_cell();
   
-  if (~ null?(tail)) {
+  ifnot (null?(tail)) {
     b = b.store_slice(tail);
   }
   
@@ -107,14 +107,14 @@ global builder current;
     else {
       if (eof) {
         storeData(data);
-        data~skip_bits(data.slice_bits());
+        data = null();
       }
       else {
         (data, eof) = getData(data);
       }
     }
     
-  } until (eof & data.slice_empty?());
+  } until (null?(data));
 
   ;;;;;;;;;;;;;;;;;;;;
   ;; build final cell
