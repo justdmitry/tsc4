@@ -16,7 +16,9 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
   tuple stack = null();
+  stack~push_back(tree);
   do {
+    tree = stack~pop_back();
     if (hash == cell_hash(tree)) { 
       return tree;
     }
@@ -24,7 +26,6 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
     repeat (s.slice_refs()) {
       stack~push_back(s~load_ref());
     }
-    tree = stack~pop_back(); ;; last one will NOT be checked! but who cares...
   } until (stack.is_null());
 
   return begin_cell().end_cell();
