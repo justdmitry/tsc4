@@ -15,16 +15,19 @@ int tlen(tuple t) asm "TLEN";
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
+  if (hash == cell_hash(tree)) { 
+    return tree;
+  }
   var nodes = empty_tuple();
   nodes~tpush(tree);
   while (nodes.tlen()) {
-    tree = nodes~tpop();
-    if (hash == cell_hash(tree)) { 
-      return tree;
-    }
-    slice s = tree.begin_parse();
+    slice s = nodes~tpop().begin_parse();
     repeat (s.slice_refs()) {
-      nodes~tpush(s~load_ref());
+      tree = s~load_ref();
+      if (hash == cell_hash(tree)) { 
+        return tree;
+      }
+      nodes~tpush(tree);
     }
   }
   return begin_cell().end_cell();
