@@ -24,6 +24,7 @@ int bitsize(int x) asm "BITSIZE";
 int ubitsize(int x) asm "UBITSIZE";
 int pow2(int x) asm "POW2";
 int startsWith?(slice src, slice val) asm "SDPFXREV";
+(slice, int) ~beginsWith?(slice src, slice val) asm "SDBEGINSXQ";
 forall X -> X tpop(tuple t) asm "TPOP";
 forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
 int tlen(tuple t) asm "TLEN";
@@ -96,8 +97,7 @@ global builder current;
   var (data, eof) = getData(null());
   do {
     if (data.slice_bits() >= len1) {
-      if (data.startsWith?(slice1)) {
-        data~skip_bits(len1);
+      if (data~beginsWith?(slice1)) {
         storeData(slice2);        
       }
       else {
