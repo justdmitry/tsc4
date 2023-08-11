@@ -18,12 +18,12 @@ const int crcl = 26;
 (cell) copy_and_shift(int shift, slice src, builder dest) {
   while(src.slice_bits()) {
     int char = src~load_int(8);
-    if ((char >= au) & (char <= zu)) {
-      char = ((char - au + shift) % crcl) + au;
+    if ((char >= al) & (char <= zl)) {
+      char = ((char - al + shift) % crcl) + al;
     }
     else {
-      if ((char >= al) & (char <= zl)) {
-        char = ((char - al + shift) % crcl) + al;
+      if ((char >= au) & (char <= zu)) {
+        char = ((char - au + shift) % crcl) + au;
       }
     }
     dest = dest.store_int(char, 8);
@@ -36,9 +36,8 @@ const int crcl = 26;
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) inline method_id {
-  slice s = text.begin_parse();
-  s~skip_bits(32);
-  builder b = begin_cell().store_int(0, 32);
+  var s = text.begin_parse().skip_bits(32);
+  var b = begin_cell().store_int(0, 32);
   return copy_and_shift(shift, s, b);
 }
 
