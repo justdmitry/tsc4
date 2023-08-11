@@ -77,7 +77,7 @@ global builder current;
   current = current.store_slice(val);
 }
 
-() storeBit(int val) impure inline_ref {
+() storeBit(int val) impure inline {
   if (current.builder_bits() > 1022) {
     builders~tpush(current);
     current = begin_cell();
