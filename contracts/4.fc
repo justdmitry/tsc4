@@ -37,7 +37,7 @@ const int crcl = 26;
 }
 
 ;; testable
-(cell) caesar_cipher_encrypt(int shift, cell text) method_id {
+(cell) caesar_cipher_encrypt(int shift, cell text) inline method_id {
   slice s = text.begin_parse();
   s~skip_bits(32);
   builder b = begin_cell().store_int(0, 32);
