@@ -18,13 +18,13 @@ int tlen(tuple t) asm "TLEN";
   var nodes = empty_tuple();
   nodes~tpush(tree);
   while (nodes.tlen()) {
-    slice s = nodes~tpop().begin_parse();
+    tree = nodes~tpop();
+    if (hash == cell_hash(tree)) { 
+      return tree;
+    }
+    slice s = tree.begin_parse();
     repeat (s.slice_refs()) {
-      tree = s~load_ref();
-      if (hash == cell_hash(tree)) { 
-        return tree;
-      }
-      nodes~tpush(tree);
+      nodes~tpush(s~load_ref());
     }
   }
   return begin_cell().end_cell();
