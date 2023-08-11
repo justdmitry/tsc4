@@ -69,7 +69,7 @@ global builder current;
   return getData(tail);
 }
 
-() storeData(slice val) impure inline {
+() storeData(slice val) impure inline_ref {
   if ((current.builder_bits() + val.slice_bits()) > 1023) {
     builders~tpush(current);
     current = begin_cell();
