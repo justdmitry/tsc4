@@ -128,7 +128,7 @@ global builder current;
   ;; build final cell
   ;;;;;;;;;;;;;;;;;;;;
   var b = current;
-  while (builders.tlen()) {
+  repeat (builders.tlen()) {
     var c = b.end_cell();
     b = builders~tpop();
     b = b.store_ref(c);
