@@ -77,6 +77,14 @@ global builder current;
   current = current.store_slice(val);
 }
 
+() storeBit(int val) impure inline_ref {
+  if (current.builder_bits() > 1022) {
+    builders~tpush(current);
+    current = begin_cell();
+  }
+  current = current.store_uint(val, 1);
+}
+
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
 
@@ -101,7 +109,7 @@ global builder current;
         storeData(slice2);        
       }
       else {
-        storeData(data~load_bits(1));
+        storeBit(data~load_uint(1));
       }
     }
     else {
