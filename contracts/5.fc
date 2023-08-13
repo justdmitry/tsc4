@@ -56,9 +56,14 @@
     return res;
   }
 
-  res~tpush(0);
-  res~tpush(1);
-  k -= 2;
+  if (n == 0) {
+    res~tpush(-1);
+  }
+  
+  if (n <= 1) {
+    res~tpush(1);
+    k -= 1;
+  }
   
   var (cur, x, y) = getSomePrecalc(n);
   
