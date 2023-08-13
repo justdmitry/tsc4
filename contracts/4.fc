@@ -12,35 +12,38 @@ const int al = "a"u;
 const int zl = "z"u;
 const int crcl = 26;
 
+global int globshift;
+
 () recv_internal() {
 }
 
-(cell) copy_and_shift(int shift, slice src) {
+(cell) copy_and_shift(slice src) {
   var dest = begin_cell();
   while(src.slice_bits()) {
     int char = src~load_int(8);
     if ((char >= al) & (char <= zl)) {
-      char = ((char - al + shift) % crcl) + al;
+      char = ((char - al + globshift) % crcl) + al;
     }
     else {
       if ((char >= au) & (char <= zu)) {
-        char = ((char - au + shift) % crcl) + au;
+        char = ((char - au + globshift) % crcl) + au;
       }
     }
     dest = dest.store_int(char, 8);
   }
   if (src.slice_refs()) {
-    dest = dest.store_ref(copy_and_shift(shift, src~load_ref().begin_parse()));
+    dest = dest.store_ref(copy_and_shift(src~load_ref().begin_parse()));
   }
   return dest.end_cell();
 }
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) inline method_id {
-  ifnot (shift % crcl) {
+  globshift = shift % crcl;
+  ifnot (globshift) {
     return text;
   }
-  return copy_and_shift(shift, text.begin_parse());
+  return copy_and_shift(text.begin_parse());
 }
 
 ;; testable
