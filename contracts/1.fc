@@ -15,10 +15,6 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  if (hash < 0x100000000000000000000000000000000) {
-    return begin_cell().end_cell();
-  }
-
   tuple stack = null();
   stack~push_back(tree);
   do {
