@@ -58,22 +58,27 @@
 
   if (n == 0) {
     res~tpush(0);
+    k -= 1;
   }
   
   if (n <= 1) {
     res~tpush(1);
+    k -= 1;
   }
   
   var (cur, x, y) = getSomePrecalc(n);
   
-  repeat (n + k - cur) {
+  repeat (n - cur) {
     var z = x + y;
-    if (cur >= n) {
-      res~tpush(z);
-    }
     x = y;
     y = z;
-    cur = cur + 1;
+  }
+  
+  repeat (k) {
+    var z = x + y;
+    res~tpush(z);
+    x = y;
+    y = z;
   }
   
   return res;
