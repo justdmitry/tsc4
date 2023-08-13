@@ -15,44 +15,32 @@ const int crcl = 26;
 () recv_internal() {
 }
 
+(cell) copy_and_shift(int shift, slice src) {
+  var dest = begin_cell();
+  while(src.slice_bits()) {
+    int char = src~load_int(8);
+    if ((char >= al) & (char <= zl)) {
+      char = ((char - al + shift) % crcl) + al;
+    }
+    else {
+      if ((char >= au) & (char <= zu)) {
+        char = ((char - au + shift) % crcl) + au;
+      }
+    }
+    dest = dest.store_int(char, 8);
+  }
+  if (src.slice_refs()) {
+    dest = dest.store_ref(copy_and_shift(shift, src~load_ref().begin_parse()));
+  }
+  return dest.end_cell();
+}
+
 ;; testable
-(cell) caesar_cipher_encrypt(int shift, cell text) method_id {
+(cell) caesar_cipher_encrypt(int shift, cell text) inline method_id {
   ifnot (shift % crcl) {
     return text;
   }
-  
-  var list = null();
-  var src = text.begin_parse();
-  var dest = begin_cell();
-  do {
-    while(src.slice_bits()) {
-      int char = src~load_int(8);
-      if ((char >= al) & (char <= zl)) {
-        char = ((char - al + shift) % crcl) + al;
-      }
-      else {
-        if ((char >= au) & (char <= zu)) {
-          char = ((char - au + shift) % crcl) + au;
-        }
-      }
-      dest = dest.store_int(char, 8);
-    }
-    if (src.slice_refs()) {
-      list = cons(dest, list);
-      dest = begin_cell();
-      src = src~load_ref().begin_parse();
-    }
-    else {
-      src = null();
-    }
-  } until (null?(src));
-  
-  while (~ null?(list)) {
-    var c = dest.end_cell();
-    dest = list~list_next().store_ref(c);
-  }
-  
-  return dest.end_cell();
+  return copy_and_shift(shift, text.begin_parse());
 }
 
 ;; testable
