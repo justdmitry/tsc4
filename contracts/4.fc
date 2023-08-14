@@ -12,29 +12,39 @@ const int al = "a"u;
 const int zl = "z"u;
 const int crcl = 26;
 
-global int shiftal;
-global int shiftau;
-
 () recv_internal() {
 }
 
-(cell) copy_and_shift(cell source) {
+(tuple) make_table(int shift) impure {
+  var rtable = empty_tuple();
+  var x = 0;
+  repeat (255) {
+    if ((x >= al) & (x <= zl)) {
+      rtable~tpush(((x - al + shift) % crcl) + al);
+    }
+    else {
+      if ((x >= au) & (x <= zu)) {
+        rtable~tpush(((x - au + shift) % crcl) + au);
+      }
+      else {
+        rtable~tpush(x);
+      }
+    }
+    x += 1;
+  }
+  
+  return rtable;
+}
+
+(cell) copy_and_shift(cell source, tuple table) {
   var dest = begin_cell();
   var src = source.begin_parse();
   while(src.slice_bits()) {
-    int char = src~load_int(8);
-    if ((char >= al) & (char <= zl)) {
-      char = ((char + shiftal) % crcl) + al;
-    }
-    else {
-      if ((char >= au) & (char <= zu)) {
-        char = ((char + shiftau) % crcl) + au;
-      }
-    }
-    dest = dest.store_int(char, 8);
+    int char = src~load_uint(8);
+    dest = dest.store_uint(table.at(char), 8);
   }
   if (src.slice_refs()) {
-    dest = dest.store_ref(copy_and_shift(src~load_ref()));
+    dest = dest.store_ref(copy_and_shift(src~load_ref(), table));
   }
   return dest.end_cell();
 }
@@ -44,9 +54,8 @@ global int shiftau;
   ifnot (shift % crcl) {
     return text;
   }
-  shiftal = shift - al;
-  shiftau = shift - au;
-  return copy_and_shift(text);
+  var table = make_table(shift);
+  return copy_and_shift(text, table);
 }
 
 ;; testable
