@@ -3,6 +3,8 @@ import { Cell, toNano } from 'ton-core';
 import { Task5 } from '../wrappers/Task5';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
+import { readFileSync } from 'fs';
+import { fromCode } from 'tvm-disassembler';
 
 describe('Task5', () => {
     let code: Cell;
@@ -36,57 +38,66 @@ describe('Task5', () => {
         // blockchain and task5 are ready to use
     });
 
-    it('for 50', async () => {
-         var found = await task5.getFibonacciSequence(48n, 3n);
-         console.log(48, found.readBigNumber());
-         console.log(49, found.readBigNumber());
-         console.log(50, found.readBigNumber());
+    it('disasm', async () => {
+      let source = await fromCode(code);    
+      console.log(source);
     });
 
-    it('for 100', async () => {
-         var found = await task5.getFibonacciSequence(98n, 3n);
-         console.log(98, found.readBigNumber());
-         console.log(99, found.readBigNumber());
-         console.log(100, found.readBigNumber());
-    });
+    it('for 32/64...', async () => {
+         var found = await task5.getFibonacciSequence(30n, 3n);
+         console.log(30, found.readBigNumber());
+         console.log(31, found.readBigNumber());
+         console.log(32, found.readBigNumber());
 
-    it('for 150', async () => {
-         var found = await task5.getFibonacciSequence(148n, 3n);
-         console.log(148, found.readBigNumber());
-         console.log(149, found.readBigNumber());
-         console.log(150, found.readBigNumber());
-    });
+         found = await task5.getFibonacciSequence(62n, 3n);
+         console.log(62, found.readBigNumber());
+         console.log(63, found.readBigNumber());
+         console.log(64, found.readBigNumber());
 
-    it('for 200', async () => {
-         var found = await task5.getFibonacciSequence(198n, 3n);
-         console.log(198, found.readBigNumber());
-         console.log(199, found.readBigNumber());
-         console.log(200, found.readBigNumber());
-    });
+         found = await task5.getFibonacciSequence(94n, 3n);
+         console.log(94, found.readBigNumber());
+         console.log(95, found.readBigNumber());
+         console.log(96, found.readBigNumber());
 
-    it('for 250', async () => {
-         var found = await task5.getFibonacciSequence(248n, 3n);
-         console.log(248, found.readBigNumber());
-         console.log(249, found.readBigNumber());
-         console.log(250, found.readBigNumber());
-    });
+         found = await task5.getFibonacciSequence(126n, 3n);
+         console.log(126, found.readBigNumber());
+         console.log(127, found.readBigNumber());
+         console.log(128, found.readBigNumber());
 
-    it('for 300', async () => {
-         var found = await task5.getFibonacciSequence(298n, 3n);
-         console.log(298, found.readBigNumber());
-         console.log(299, found.readBigNumber());
-         console.log(300, found.readBigNumber());
-    });
+         found = await task5.getFibonacciSequence(158n, 3n);
+         console.log(158, found.readBigNumber());
+         console.log(159, found.readBigNumber());
+         console.log(160, found.readBigNumber());
 
-    it('for 350', async () => {
-         var found = await task5.getFibonacciSequence(348n, 3n);
-         console.log(348, found.readBigNumber());
-         console.log(349, found.readBigNumber());
-         console.log(350, found.readBigNumber());
-    });
+         found = await task5.getFibonacciSequence(190n, 3n);
+         console.log(190, found.readBigNumber());
+         console.log(191, found.readBigNumber());
+         console.log(192, found.readBigNumber());
 
-    it('check 201', async () => {
-         var found = await task5.getFibonacciSequence(201n, 2n);
-         console.log(201, found.readBigNumber());
+         found = await task5.getFibonacciSequence(222n, 3n);
+         console.log(222, found.readBigNumber());
+         console.log(223, found.readBigNumber());
+         console.log(224, found.readBigNumber());
+
+         found = await task5.getFibonacciSequence(254n, 3n);
+         console.log(254, found.readBigNumber());
+         console.log(255, found.readBigNumber());
+         console.log(256, found.readBigNumber());
+
+         found = await task5.getFibonacciSequence(286n, 3n);
+         console.log(286, found.readBigNumber());
+         console.log(287, found.readBigNumber());
+         console.log(288, found.readBigNumber());
+
+         found = await task5.getFibonacciSequence(318n, 3n);
+         console.log(318, found.readBigNumber());
+         console.log(319, found.readBigNumber());
+         console.log(320, found.readBigNumber());
+
+         found = await task5.getFibonacciSequence(340n, 3n);
+         console.log(340, found.readBigNumber());
+         console.log(341, found.readBigNumber());
+         console.log(342, found.readBigNumber());
+
     });
 });
