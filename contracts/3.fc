@@ -65,6 +65,10 @@ global builder current;
   if (source.slice_empty?()) {
     return (tail, true);
   }
+  
+  if (tail.slice_bits() > len1) {
+    return (tail, false);
+  }
 
   return getData(tail);
 }
