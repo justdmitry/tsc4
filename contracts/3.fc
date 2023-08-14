@@ -39,10 +39,10 @@ global slice source;
 global tuple builders;
 global builder current;
 
-(slice, int) getData(slice tail) impure {
+(int, slice) getData(slice tail) impure {
 
   if (source.slice_empty?()) {
-    return (tail, true);
+    return (true, tail);
   }
 
   if (source.slice_data_empty?()) {
@@ -57,28 +57,24 @@ global builder current;
   }
   
   if (source.slice_bits() >= 400) {
-    return (b.store_slice(source~load_bits(400)).end_cell().begin_parse(), false);
+    return (false, b.store_slice(source~load_bits(400)).end_cell().begin_parse());
   }
   
   tail = b.store_slice(source~load_bits(source.slice_bits())).end_cell().begin_parse();
 
   if (source.slice_empty?()) {
-    return (tail, true);
+    return (true, tail);
   }
   
-  if (tail.slice_bits() > len1) {
-    return (tail, false);
-  }
-
   return getData(tail);
 }
 
-() storeData(slice val) impure inline_ref {
-  if ((current.builder_bits() + val.slice_bits()) > 1023) {
+() storeSlice2() impure inline {
+  if ((current.builder_bits() + len2) > 1023) {
     builders = cons(current, builders);
     current = begin_cell();
   }
-  current = current.store_slice(val);
+  current = current.store_slice(slice2);
 }
 
 () storeBit(int val) impure inline {
@@ -87,6 +83,11 @@ global builder current;
     current = begin_cell();
   }
   current = current.store_uint(val, 1);
+}
+
+() storeTail(slice val) impure inline {
+  builders = cons(current, builders);
+  current = begin_cell().store_slice(val);
 }
 
 ;; testable
@@ -106,11 +107,11 @@ global builder current;
   builders = null();
   current = begin_cell();
   
-  var (data, eof) = getData(null());
+  var (eof, data) = getData(null());
   do {
     if (data.slice_bits() >= len1) {
       if (data~beginsWith?(slice1)) {
-        storeData(slice2);        
+        storeSlice2();        
       }
       else {
         storeBit(data~load_uint(1));
@@ -118,11 +119,11 @@ global builder current;
     }
     else {
       if (eof) {
-        storeData(data);
+        storeTail(data);
         data = null();
       }
       else {
-        (data, eof) = getData(data);
+        (eof, data) = getData(data);
       }
     }
     
