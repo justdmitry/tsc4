@@ -48,23 +48,21 @@
   return (2, 0, 1);
 }
 
-forall X -> tuple supercons(tuple curr, X next) asm "CONS";
-
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
-  var res = null();
+  var res = empty_tuple();
   
   ifnot (k) {
     return res;
   }
 
   ifnot (n) {
-    res = supercons(res, 0);
+    res~tpush(0);
     k -= 1;
   }
   
   if (n <= 1) {
-    res = supercons(res, 1);
+    res~tpush(1);
     k -= 1;
   }
   
@@ -78,7 +76,7 @@ forall X -> tuple supercons(tuple curr, X next) asm "CONS";
   
   repeat (k) {
     var z = x + y;
-    res = supercons(res, z);
+    res~tpush(z);
     x = y;
     y = z;
   }
