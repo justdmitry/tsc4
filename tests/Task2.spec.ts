@@ -3,6 +3,7 @@ import { Cell, toNano } from 'ton-core';
 import { Task2 } from '../wrappers/Task2';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
+import { fromCode } from 'tvm-disassembler';
 
 describe('Task2', () => {
     let code: Cell;
@@ -34,5 +35,10 @@ describe('Task2', () => {
     it('should deploy', async () => {
         // the check is done inside beforeEach
         // blockchain and task2 are ready to use
+    });
+
+    it('disasm', async () => {
+      let source = await fromCode(code);    
+      console.log(source);
     });
 });

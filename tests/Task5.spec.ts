@@ -3,7 +3,6 @@ import { Cell, toNano } from 'ton-core';
 import { Task5 } from '../wrappers/Task5';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
-import { readFileSync } from 'fs';
 import { fromCode } from 'tvm-disassembler';
 
 describe('Task5', () => {

@@ -3,6 +3,7 @@ import { beginCell, Cell, toNano } from 'ton-core';
 import { Task1 } from '../wrappers/Task1';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
+import { fromCode } from 'tvm-disassembler';
 
 describe('Task1', () => {
     let code: Cell;
@@ -39,5 +40,10 @@ describe('Task1', () => {
     it('should work', async () => {
       var tree = beginCell().storeUint(123, 32).storeUint(456, 32).endCell();
       var found = await task1.getFindBranchByHash(123n, tree);
+    });
+
+    it('disasm', async () => {
+      let source = await fromCode(code);    
+      console.log(source);
     });
 });
