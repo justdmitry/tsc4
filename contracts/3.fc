@@ -56,8 +56,8 @@ global builder current;
     b = b.store_slice(tail);
   }
   
-  if (source.slice_bits() >= 400) {
-    return (b.store_slice(source~load_bits(400)).end_cell().begin_parse(), false);
+  if (source.slice_bits() >= 890) {
+    return (b.store_slice(source~load_bits(890)).end_cell().begin_parse(), false);
   }
   
   tail = b.store_slice(source~load_bits(source.slice_bits())).end_cell().begin_parse();
