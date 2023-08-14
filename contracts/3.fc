@@ -33,7 +33,6 @@ int min(int x, int y) asm "MIN";
 global int len1;
 global int len2;
 global slice slice1;
-global slice slice2;
 
 global slice source;
 global tuple builders;
@@ -69,12 +68,12 @@ global builder current;
   return getData(tail);
 }
 
-() storeSlice2() impure inline {
+() storeReplaced(int value) impure inline {
   if ((current.builder_bits() + len2) > 1023) {
     builders = cons(current, builders);
     current = begin_cell();
   }
-  current = current.store_slice(slice2);
+  current = current.store_uint(value, len2);
 }
 
 () storeBit(int val) impure inline {
@@ -102,7 +101,6 @@ global builder current;
   slice1 = begin_cell().store_uint(flag, len1).end_cell().begin_parse();
 
   len2 = ubitsize(value);
-  slice2 = begin_cell().store_uint(value, len2).end_cell().begin_parse();
 
   builders = null();
   current = begin_cell();
@@ -111,7 +109,7 @@ global builder current;
   do {
     if (data.slice_bits() >= len1) {
       if (data~beginsWith?(slice1)) {
-        storeSlice2();        
+        storeReplaced(value);        
       }
       else {
         storeBit(data~load_uint(1));
