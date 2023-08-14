@@ -36,62 +36,57 @@ global slice slice1;
 global slice slice2;
 
 global slice source;
-global slice sourceBuffer;
-global int eof;
 global tuple builders;
 global builder current;
 
-() getData() impure {
+(slice, int) getData(slice tail) impure {
 
   if (source.slice_empty?()) {
-    eof = true;
-    return ();
+    return (tail, true);
   }
 
   if (source.slice_data_empty?()) {
     source = source~load_ref().begin_parse();
-    return getData();
+    return getData(tail);
   }
 
   var b = begin_cell();
   
-  ifnot (null?(sourceBuffer)) {
-    b = b.store_slice(sourceBuffer);
+  ifnot (null?(tail)) {
+    b = b.store_slice(tail);
   }
   
   if (source.slice_bits() >= 400) {
-    sourceBuffer = b.store_slice(source~load_bits(400)).end_cell().begin_parse();
-    return ();
+    return (b.store_slice(source~load_bits(400)).end_cell().begin_parse(), false);
   }
   
-  sourceBuffer = b.store_slice(source~load_bits(source.slice_bits())).end_cell().begin_parse();
+  tail = b.store_slice(source~load_bits(source.slice_bits())).end_cell().begin_parse();
 
   if (source.slice_empty?()) {
-    eof = true;
+    return (tail, true);
   }
   
-  getData();
+  if (tail.slice_bits() > len1) {
+    return (tail, false);
+  }
+
+  return getData(tail);
 }
 
-() storeSlice2() impure inline {
-  if ((current.builder_bits() + len2) > 1023) {
+() storeData(slice val) impure inline_ref {
+  if ((current.builder_bits() + val.slice_bits()) > 1023) {
     builders = cons(current, builders);
     current = begin_cell();
   }
-  current = current.store_slice(slice2);
+  current = current.store_slice(val);
 }
 
 () storeBit(int val) impure inline {
-  if (current.builder_bits() == 1023) {
+  if (current.builder_bits() > 1022) {
     builders = cons(current, builders);
     current = begin_cell();
   }
   current = current.store_uint(val, 1);
-}
-
-() storeTail() impure inline_ref {
-  builders = cons(current, builders);
-  current = begin_cell().store_slice(sourceBuffer);
 }
 
 ;; testable
@@ -110,30 +105,28 @@ global builder current;
 
   builders = null();
   current = begin_cell();
-  sourceBuffer = null();
-  eof = 0;
   
-  getData();
+  var (data, eof) = getData(null());
   do {
-    if (sourceBuffer.slice_bits() >= len1) {
-      if (sourceBuffer~beginsWith?(slice1)) {
-        storeSlice2();        
+    if (data.slice_bits() >= len1) {
+      if (data~beginsWith?(slice1)) {
+        storeData(slice2);        
       }
       else {
-        storeBit(sourceBuffer~load_uint(1));
+        storeBit(data~load_uint(1));
       }
     }
     else {
       if (eof) {
-        storeTail();
-        sourceBuffer = null();
+        storeData(data);
+        data = null();
       }
       else {
-        getData();
+        (data, eof) = getData(data);
       }
     }
     
-  } until (null?(sourceBuffer));
+  } until (null?(data));
 
   ;;;;;;;;;;;;;;;;;;;;
   ;; build final cell
