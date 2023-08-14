@@ -15,21 +15,16 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  var shit = "01"s;
-  var visited = null();
   tuple stack = null();
   stack~push_back(tree);
   do {
     tree = stack~pop_back();
-    var hsh = cell_hash(tree);
-    if (hsh == hash) { 
+    if (cell_hash(tree) == hash) { 
       return tree;
     }
-    if (visited~udict_add?(256, hsh, shit)) {
-      slice s = tree.begin_parse();
-      repeat (s.slice_refs()) {
-        stack~push_back(s~load_ref());
-      }
+    slice s = tree.begin_parse();
+    repeat (s.slice_refs()) {
+      stack~push_back(s~load_ref());
     }
   } until (stack.is_null());
 
