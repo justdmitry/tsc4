@@ -12,6 +12,9 @@ const int al = "a"u;
 const int zl = "z"u;
 const int crcl = 26;
 
+global int shiftal;
+global int shiftau;
+
 () recv_internal() {
 }
 
@@ -20,11 +23,11 @@ const int crcl = 26;
   while(src.slice_bits()) {
     int char = src~load_int(8);
     if ((char >= al) & (char <= zl)) {
-      char = ((char - al + shift) % crcl) + al;
+      char = ((char + shiftal) % crcl) + al;
     }
     else {
       if ((char >= au) & (char <= zu)) {
-        char = ((char - au + shift) % crcl) + au;
+        char = ((char + shiftau) % crcl) + au;
       }
     }
     dest = dest.store_int(char, 8);
@@ -40,6 +43,8 @@ const int crcl = 26;
   ifnot (shift % crcl) {
     return text;
   }
+  shiftal = shift - al;
+  shiftau = shift - au;
   return copy_and_shift(shift, text.begin_parse());
 }
 
