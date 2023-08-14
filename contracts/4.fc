@@ -18,8 +18,9 @@ global int shiftau;
 () recv_internal() {
 }
 
-(cell) copy_and_shift(int shift, slice src) {
+(cell) copy_and_shift(cell source) {
   var dest = begin_cell();
+  var src = source.begin_parse();
   while(src.slice_bits()) {
     int char = src~load_int(8);
     if ((char >= al) & (char <= zl)) {
@@ -33,7 +34,7 @@ global int shiftau;
     dest = dest.store_int(char, 8);
   }
   if (src.slice_refs()) {
-    dest = dest.store_ref(copy_and_shift(shift, src~load_ref().begin_parse()));
+    dest = dest.store_ref(copy_and_shift(src~load_ref()));
   }
   return dest.end_cell();
 }
@@ -45,7 +46,7 @@ global int shiftau;
   }
   shiftal = shift - al;
   shiftau = shift - au;
-  return copy_and_shift(shift, text.begin_parse());
+  return copy_and_shift(text);
 }
 
 ;; testable
