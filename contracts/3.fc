@@ -93,10 +93,6 @@ global builder current;
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
 
-  if (flag == value) {
-    return linked_list;
-  }
-
   source = linked_list.begin_parse();
   if (source.slice_empty?()) {
     return begin_cell().end_cell();
