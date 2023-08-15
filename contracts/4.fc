@@ -18,7 +18,7 @@ const int crcl = 26;
 (tuple) make_table(int shift) impure {
   var rtable = empty_tuple();
   var x = 0;
-  repeat (255) {
+  repeat (127) {
     if ((x >= al) & (x <= zl)) {
       rtable~tpush(((x - al + shift) % crcl) + al);
     }
@@ -41,7 +41,7 @@ const int crcl = 26;
   var dest = begin_cell();
   while(src.slice_bits()) {
     int char = src~load_uint(8);
-    dest = dest.store_uint(table.at(char), 8);
+    dest = dest.store_uint(char > 127 ? char : table.at(char), 8);
   }
   if (src.slice_refs()) {
     dest = dest.store_ref(copy_and_shift(src~load_ref(), table));
