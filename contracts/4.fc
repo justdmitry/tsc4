@@ -46,35 +46,28 @@ const int crcl = 26;
   return rtable;
 }
 
-(cell) copy_and_shift(slice src, tuple table) {
+(cell) copy_and_shift(cell source, tuple table) {
+  var src = source.begin_parse();
   var dest = begin_cell();
   repeat(src.slice_bits() / 8) {
     int char = src~load_uint(8);
     dest = dest.store_uint(table.at(char), 8);
   }
   if (src.slice_refs()) {
-    dest = dest.store_ref(copy_and_shift(src~load_ref().begin_parse(), table));
+    dest = dest.store_ref(copy_and_shift(src~load_ref(), table));
   }
   return dest.end_cell();
 }
 
 ;; testable
-(cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  var src = text.begin_parse();
-  ifnot (src.preload_int(32)) {
-    var table = make_table(shift);
-    text = copy_and_shift(src, table);
-  }  
-  return text;
+(cell) caesar_cipher_encrypt(int shift, cell text) inline method_id {
+  var table = make_table(shift);
+  return copy_and_shift(text, table);
 }
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  var src = text.begin_parse();
-  ifnot (src.preload_int(32)) {
-    var table = make_table(- shift);
-    text = copy_and_shift(src, table);
-  }  
-  return text;
+  var table = make_table(- shift);
+  return copy_and_shift(text, table);
 }
 
