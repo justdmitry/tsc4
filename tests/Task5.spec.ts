@@ -93,10 +93,10 @@ describe('Task5', () => {
          console.log(319, found.readBigNumber());
          console.log(320, found.readBigNumber());
 
-         found = await task5.getFibonacciSequence(340n, 3n);
-         console.log(340, found.readBigNumber());
-         console.log(341, found.readBigNumber());
-         console.log(342, found.readBigNumber());
+         found = await task5.getFibonacciSequence(350n, 3n);
+         console.log(350, found.readBigNumber());
+         console.log(351, found.readBigNumber());
+         console.log(352, found.readBigNumber());
 
     });
 });
