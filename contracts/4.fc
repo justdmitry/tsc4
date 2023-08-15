@@ -17,14 +17,16 @@ const int crcl = 26;
 
 (tuple) make_table(int shift) impure {
   var rtable = empty_tuple();
+  var shiftal = shift - al;
+  var shiftau = shift - au;
   var x = 0;
   repeat (255) {
     if ((x >= al) & (x <= zl)) {
-      rtable~tpush(((x - al + shift) % crcl) + al);
+      rtable~tpush(((x + shiftal) % crcl) + al);
     }
     else {
       if ((x >= au) & (x <= zu)) {
-        rtable~tpush(((x - au + shift) % crcl) + au);
+        rtable~tpush(((x + shiftau) % crcl) + au);
       }
       else {
         rtable~tpush(x);
