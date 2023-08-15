@@ -20,7 +20,11 @@ const int crcl = 26;
   var shiftal = shift - al;
   var shiftau = shift - au;
   var x = 0;
-  repeat (255) {
+  repeat (64) { ;; not letters
+    rtable~tpush(x);
+    x += 1;
+  }
+  repeat (64) { ;; a lot of letters
     if ((x >= al) & (x <= zl)) {
       rtable~tpush(((x + shiftal) % crcl) + al);
     }
@@ -34,7 +38,11 @@ const int crcl = 26;
     }
     x += 1;
   }
-  
+  repeat (127) { ;; no letters again
+    rtable~tpush(x);
+    x += 1;
+  }
+
   return rtable;
 }
 
