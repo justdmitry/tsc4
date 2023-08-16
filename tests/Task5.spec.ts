@@ -41,8 +41,48 @@ describe('Task5', () => {
       let source = await fromCode(code);    
       console.log(source);
     });
+    
+    it('for 0/1...', async () => {
+         var found = await task5.getFibonacciSequence(0n, 1n);
+         expect(found.readBigNumber()).toBe(0n);
+    });
+    
+    it('for 0/4...', async () => {
+         var found = await task5.getFibonacciSequence(0n, 4n);
+         expect(found.readBigNumber()).toBe(0n);
+         expect(found.readBigNumber()).toBe(1n);
+         expect(found.readBigNumber()).toBe(1n);
+         expect(found.readBigNumber()).toBe(2n);
+    });
+    
+    it('for 1/4...', async () => {
+         var found = await task5.getFibonacciSequence(1n, 4n);
+         expect(found.readBigNumber()).toBe(1n);
+         expect(found.readBigNumber()).toBe(1n);
+         expect(found.readBigNumber()).toBe(2n);
+         expect(found.readBigNumber()).toBe(3n);
+    });
+    
+    it('for 1/1...', async () => {
+         var found = await task5.getFibonacciSequence(1n, 1n);
+         expect(found.readBigNumber()).toBe(1n);
+    });
+    
+    it('for 2/1...', async () => {
+         var found = await task5.getFibonacciSequence(2n, 1n);
+         expect(found.readBigNumber()).toBe(1n);
+    });
+    
+    it('for 201/4...', async () => {
+         var found = await task5.getFibonacciSequence(201n, 4n);
+         expect(found.readBigNumber()).toBe(453973694165307953197296969697410619233826n);
+         expect(found.readBigNumber()).toBe(734544867157818093234908902110449296423351n);
+         expect(found.readBigNumber()).toBe(1188518561323126046432205871807859915657177n);
+         expect(found.readBigNumber()).toBe(1923063428480944139667114773918309212080528n);
+    });
 
     it('for 32/64...', async () => {
+    return;
          var found = await task5.getFibonacciSequence(30n, 3n);
          console.log(30, found.readBigNumber());
          console.log(31, found.readBigNumber());
