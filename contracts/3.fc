@@ -72,31 +72,27 @@ global slice source;
   var slice1 = begin_cell().store_uint(flag, len1).end_cell().begin_parse();
 
   var len2 = ubitsize(value);
+  var 1023minuslen2 = 1023 - len2;
   var slice2 = begin_cell().store_uint(value, len2).end_cell().begin_parse();
 
   var builders = null();
   var current = begin_cell();
-  var curleft = 1023;
   
   var (eof, data) = getData(null());
   do {
     if (data.slice_bits() >= len1) {
       if (data~beginsWith?(slice1)) {
-        if (curleft < len2) {
+        if (current.builder_bits() > 1023minuslen2) {
           builders = cons(current, builders);
           current = begin_cell();
-          curleft = 1023;
         }
-        curleft -= len2;
         current = current.store_slice(slice2);
       }
       else {
-        ifnot (curleft) {
+        if (current.builder_bits() > 1022) {
           builders = cons(current, builders);
           current = begin_cell();
-          curleft = 1023;
         }
-        curleft -= 1;
         current = current.store_uint(data~load_uint(1), 1);
       }
     }
