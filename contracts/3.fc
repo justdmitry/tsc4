@@ -87,18 +87,14 @@ global slice source;
   do {
     if (data.slice_canload_bits?(len1)) {
       if (data~beginsWith?(slice1)) {
-        ifnot (current.builder_canstore_bits?(len2)) {
-          builders = cons(current, builders);
-          current = begin_cell();
-        }
         current = current.store_slice(slice2);
       }
       else {
-        ifnot (current.builder_canstore_bits?(1)) {
-          builders = cons(current, builders);
-          current = begin_cell();
-        }
         current = current.store_uint(data~load_uint(1), 1);
+      }
+      ifnot (current.builder_canstore_bits?(len2)) {
+        builders = cons(current, builders);
+        current = begin_cell();
       }
     }
     else {
