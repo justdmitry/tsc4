@@ -38,7 +38,9 @@ global slice source;
     return (true, tail);
   }
 
-  if (source.slice_data_empty?()) {
+  var havebits = source.slice_bits();
+
+  ifnot (havebits) {
     source = source~load_ref().begin_parse();
     return getData(tail);
   }
@@ -49,15 +51,11 @@ global slice source;
     b = b.store_slice(tail);
   }
   
-  if (source.slice_bits() >= 400) {
-    return (false, b.store_slice(source~load_bits(400)).end_cell().begin_parse());
+  if (havebits >= 447) {
+    return (false, b.store_slice(source~load_bits(447)).end_cell().begin_parse());
   }
   
-  tail = b.store_slice(source~load_bits(source.slice_bits())).end_cell().begin_parse();
-
-  if (source.slice_empty?()) {
-    return (true, tail);
-  }
+  tail = b.store_slice(source~load_bits(havebits)).end_cell().begin_parse();
   
   return getData(tail);
 }
@@ -74,7 +72,7 @@ global slice source;
   var slice1 = begin_cell().store_uint(flag, len1).end_cell().begin_parse();
 
   var len2 = ubitsize(value);
-  var 1023minlen2 = 1023 - len2;
+  var 1023minuslen2 = 1023 - len2;
   var slice2 = begin_cell().store_uint(value, len2).end_cell().begin_parse();
 
   var builders = null();
@@ -84,7 +82,7 @@ global slice source;
   do {
     if (data.slice_bits() >= len1) {
       if (data~beginsWith?(slice1)) {
-        if (current.builder_bits() > 1023minlen2) {
+        if (current.builder_bits() > 1023minuslen2) {
           builders = cons(current, builders);
           current = begin_cell();
         }
