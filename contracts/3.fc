@@ -29,6 +29,8 @@ forall X -> X tpop(tuple t) asm "TPOP";
 forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
 int tlen(tuple t) asm "TLEN";
 int min(int x, int y) asm "MIN";
+int builder_canstore_bits?(builder b, int count) asm "BCHKBITSQ";
+int slice_canload_bits?(slice s, int count) asm "SCHKBITSQ";
 
 global slice source;
 
@@ -80,16 +82,16 @@ global slice source;
   
   var (eof, data) = getData(null());
   do {
-    if (data.slice_bits() >= len1) {
+    if (data.slice_canload_bits?(len1)) {
       if (data~beginsWith?(slice1)) {
-        if (current.builder_bits() > 1023minuslen2) {
+        ifnot (current.builder_canstore_bits?(len2)) {
           builders = cons(current, builders);
           current = begin_cell();
         }
         current = current.store_slice(slice2);
       }
       else {
-        if (current.builder_bits() > 1022) {
+        ifnot (current.builder_canstore_bits?(1)) {
           builders = cons(current, builders);
           current = begin_cell();
         }
