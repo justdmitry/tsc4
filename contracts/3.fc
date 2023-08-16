@@ -38,7 +38,7 @@ global slice source;
 (int, slice) getData(slice tail, int len) impure {
 
   if (source.slice_empty?()) {
-    return (true, tail);
+    return (false, tail);
   }
 
   var havebits = source.slice_bits();
@@ -59,7 +59,7 @@ global slice source;
   
   if (tail.slice_canload_bits?(len))
   {
-    return (false, tail);
+    return (true, tail);
   }
   
   return getData(tail, len);
@@ -83,32 +83,27 @@ global slice source;
   var builders = null();
   var current = begin_cell();
   
-  var (eof, data) = getData(null(), len1);
-  do {
-    if (data.slice_canload_bits?(len1)) {
-      if (data~beginsWith?(slice1)) {
-        current = current.store_slice(slice2);
-      }
-      else {
-        current = current.store_uint(data~load_uint(1), 1);
-      }
-      ifnot (current.builder_canstore_bits?(len2)) {
-        builders = cons(current, builders);
-        current = begin_cell();
-      }
+  var (haveMore, data) = getData(null(), len1);
+  while (haveMore) {
+    if (data~beginsWith?(slice1)) {
+      current = current.store_slice(slice2);
     }
     else {
-      if (eof) {
-        builders = cons(current, builders);
-        current = begin_cell().store_slice(data);
-        data = null();
-      }
-      else {
-        (eof, data) = getData(data, len1);
-      }
+      current = current.store_uint(data~load_uint(1), 1);
     }
     
-  } until (null?(data));
+    ifnot (current.builder_canstore_bits?(len2)) {
+      builders = cons(current, builders);
+      current = begin_cell();
+    }
+    
+    ifnot (data.slice_canload_bits?(len1)) {
+      (haveMore, data) = getData(data, len1);
+    }
+  }
+
+  builders = cons(current, builders);
+  current = begin_cell().store_slice(data);
 
   ;;;;;;;;;;;;;;;;;;;;
   ;; build final cell
