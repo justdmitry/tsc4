@@ -88,20 +88,25 @@
   TUPLEVAR
 """;
 
+(int, int) compute_F_n(int x, int y, int steps) asm """
+  <{
+    TUCK
+    ADD
+  }> PUSHCONT
+  REPEAT
+""";
+
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
   ifnot (k) {
     return empty_tuple();
   }
 
-  ;; X is FIB_cur, Y is FIB_cur+1
   var (x, y, cur) = getSomePrecalc(n);
+
+  ;; X is FIB_cur, Y is FIB_cur+1
   
-  repeat (n - cur) {
-    var z = x + y;
-    x = y;
-    y = z;
-  }
+  (x, y) = compute_F_n(x, y, n - cur);
   
   ;; now X is FIB_n
   
