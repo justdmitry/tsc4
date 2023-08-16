@@ -29,12 +29,13 @@ forall X -> X tpop(tuple t) asm "TPOP";
 forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
 int tlen(tuple t) asm "TLEN";
 int min(int x, int y) asm "MIN";
+int builder_remaining_bits(builder b) asm "BREMBITS";
 int builder_canstore_bits?(builder b, int count) asm "BCHKBITSQ";
 int slice_canload_bits?(slice s, int count) asm "SCHKBITSQ";
 
 global slice source;
 
-(int, slice) getData(slice tail) impure {
+(int, slice) getData(slice tail, int len) impure {
 
   if (source.slice_empty?()) {
     return (true, tail);
@@ -44,7 +45,7 @@ global slice source;
 
   ifnot (havebits) {
     source = source~load_ref().begin_parse();
-    return getData(tail);
+    return getData(tail, len);
   }
 
   var b = begin_cell();
@@ -53,13 +54,15 @@ global slice source;
     b = b.store_slice(tail);
   }
   
-  if (havebits >= 447) {
-    return (false, b.store_slice(source~load_bits(447)).end_cell().begin_parse());
+  var canload = min(b.builder_remaining_bits(), havebits);
+  tail = b.store_slice(source~load_bits(canload)).end_cell().begin_parse();
+  
+  if (tail.slice_canload_bits?(len))
+  {
+    return (false, tail);
   }
   
-  tail = b.store_slice(source~load_bits(havebits)).end_cell().begin_parse();
-  
-  return getData(tail);
+  return getData(tail, len);
 }
 
 ;; testable
@@ -80,7 +83,7 @@ global slice source;
   var builders = null();
   var current = begin_cell();
   
-  var (eof, data) = getData(null());
+  var (eof, data) = getData(null(), len1);
   do {
     if (data.slice_canload_bits?(len1)) {
       if (data~beginsWith?(slice1)) {
@@ -105,7 +108,7 @@ global slice source;
         data = null();
       }
       else {
-        (eof, data) = getData(data);
+        (eof, data) = getData(data, len1);
       }
     }
     
