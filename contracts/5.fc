@@ -16,10 +16,6 @@
 () recv_internal() {
 }
 
-() s2push() asm "s2 PUSH";
-() swap() asm "SWAP";
-() add() asm "ADD";
-
 (int, int, int) getSomePrecalc(int n) inline_ref {
 
   if (n >= 192) {
