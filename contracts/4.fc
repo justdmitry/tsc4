@@ -47,8 +47,8 @@ const int crcl = 26;
 }
 
 (cell) copy_and_shift(cell source, tuple table) {
-  var dest = begin_cell();
   var src = source.begin_parse();
+  var dest = begin_cell();
   repeat(src.slice_bits() / 8) {
     int char = src~load_uint(8);
     dest = dest.store_uint(table.at(char), 8);
