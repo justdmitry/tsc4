@@ -30,14 +30,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
 int tlen(tuple t) asm "TLEN";
 int min(int x, int y) asm "MIN";
 
-global int len1;
-global int len2;
-global slice slice1;
-global slice slice2;
-
 global slice source;
-global tuple builders;
-global builder current;
 
 (int, slice) getData(slice tail) impure {
 
@@ -69,27 +62,6 @@ global builder current;
   return getData(tail);
 }
 
-() storeSlice2() impure inline {
-  if ((current.builder_bits() + len2) > 1023) {
-    builders = cons(current, builders);
-    current = begin_cell();
-  }
-  current = current.store_slice(slice2);
-}
-
-() storeBit(int val) impure inline {
-  if (current.builder_bits() > 1022) {
-    builders = cons(current, builders);
-    current = begin_cell();
-  }
-  current = current.store_uint(val, 1);
-}
-
-() storeTail(slice val) impure inline {
-  builders = cons(current, builders);
-  current = begin_cell().store_slice(val);
-}
-
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
 
@@ -98,28 +70,38 @@ global builder current;
     return begin_cell().end_cell();
   }
 
-  len1 = ubitsize(flag);
-  slice1 = begin_cell().store_uint(flag, len1).end_cell().begin_parse();
+  var len1 = ubitsize(flag);
+  var slice1 = begin_cell().store_uint(flag, len1).end_cell().begin_parse();
 
-  len2 = ubitsize(value);
-  slice2 = begin_cell().store_uint(value, len2).end_cell().begin_parse();
+  var len2 = ubitsize(value);
+  var 1023minlen2 = 1023 - len2;
+  var slice2 = begin_cell().store_uint(value, len2).end_cell().begin_parse();
 
-  builders = null();
-  current = begin_cell();
+  var builders = null();
+  var current = begin_cell();
   
   var (eof, data) = getData(null());
   do {
     if (data.slice_bits() >= len1) {
       if (data~beginsWith?(slice1)) {
-        storeSlice2();        
+        if (current.builder_bits() > 1023minlen2) {
+          builders = cons(current, builders);
+          current = begin_cell();
+        }
+        current = current.store_slice(slice2);
       }
       else {
-        storeBit(data~load_uint(1));
+        if (current.builder_bits() > 1022) {
+          builders = cons(current, builders);
+          current = begin_cell();
+        }
+        current = current.store_uint(data~load_uint(1), 1);
       }
     }
     else {
       if (eof) {
-        storeTail(data);
+        builders = cons(current, builders);
+        current = begin_cell().store_slice(data);
         data = null();
       }
       else {
