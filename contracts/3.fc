@@ -34,18 +34,21 @@ int builder_canstore_bits?(builder b, int count) asm "BCHKBITSQ";
 int slice_canload_bits?(slice s, int count) asm "SCHKBITSQ";
 
 global slice source;
+global int len1;
+global int eof;
 
-(int, slice) getData(slice tail, int len) impure {
+slice getData(slice tail) impure {
 
   if (source.slice_empty?()) {
-    return (true, tail);
+    eof = true;
+    return tail;
   }
 
   var havebits = source.slice_bits();
 
   ifnot (havebits) {
     source = source~load_ref().begin_parse();
-    return getData(tail, len);
+    return getData(tail);
   }
 
   var b = begin_cell();
@@ -57,12 +60,12 @@ global slice source;
   var canload = min(b.builder_remaining_bits(), havebits);
   tail = b.store_slice(source~load_bits(canload)).end_cell().begin_parse();
   
-  if (tail.slice_canload_bits?(len))
+  if (tail.slice_canload_bits?(len1))
   {
-    return (false, tail);
+    return tail;
   }
   
-  return getData(tail, len);
+  return getData(tail);
 }
 
 ;; testable
@@ -72,18 +75,18 @@ global slice source;
   if (source.slice_empty?()) {
     return begin_cell().end_cell();
   }
-
-  var len1 = ubitsize(flag);
+  
+  len1 = ubitsize(flag);
   var slice1 = begin_cell().store_uint(flag, len1).end_cell().begin_parse();
 
   var len2 = ubitsize(value);
-  var 1023minuslen2 = 1023 - len2;
   var slice2 = begin_cell().store_uint(value, len2).end_cell().begin_parse();
 
   var builders = null();
   var current = begin_cell();
   
-  var (eof, data) = getData(null(), len1);
+  eof = 0;
+  var data = getData(null());
   do {
     if (data.slice_canload_bits?(len1)) {
       if (data~beginsWith?(slice1)) {
@@ -108,7 +111,7 @@ global slice source;
         data = null();
       }
       else {
-        (eof, data) = getData(data, len1);
+        data = getData(data);
       }
     }
     
