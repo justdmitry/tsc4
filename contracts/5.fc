@@ -75,8 +75,7 @@
 
 (tuple) make_result(int x, int y, int k, int kmin2) asm """
   <{
-    s2 PUSH
-    s2 PUSH
+    s2 s1 PUSH2
     ADD
     SWAP
   }> PUSHCONT
