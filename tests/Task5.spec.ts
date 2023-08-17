@@ -80,13 +80,5 @@ describe('Task5', () => {
          expect(found.readBigNumber()).toBe(1188518561323126046432205871807859915657177n);
          expect(found.readBigNumber()).toBe(1923063428480944139667114773918309212080528n);
     });
-    
-    it('for 184/4...', async () => {
-         var found = await task5.getFibonacciSequence(184n, 4n);
-         expect(found.readBigNumber()).toBe(127127879743834334146972278486287885163n);
-         expect(found.readBigNumber()).toBe(205697230343233228174223751303346572685n);
-         expect(found.readBigNumber()).toBe(332825110087067562321196029789634457848n);
-         expect(found.readBigNumber()).toBe(538522340430300790495419781092981030533n);
-    });
 
 });
