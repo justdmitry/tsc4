@@ -9,29 +9,22 @@
 forall X -> int is_null (X x) asm "ISNULL";
 forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
 forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
-(cell) preload_ref_var(slice s, int num) asm "PLDREFVAR";
 
 () recv_internal() {
 }
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  if (cell_hash(tree) == hash) { 
-    return tree;
-  }
   tuple stack = null();
   stack~push_back(tree);
   do {
     tree = stack~pop_back();
+    if (cell_hash(tree) == hash) { 
+      return tree;
+    }
     slice s = tree.begin_parse();
-    var cnt = s.slice_refs();
-    while(cnt) {
-      cnt -= 1;
-      var c = s.preload_ref_var(cnt);
-      if (cell_hash(c) == hash) { 
-        return c;
-      }
-      stack~push_back(c);
+    repeat (s.slice_refs()) {
+      stack~push_back(s~load_ref());
     }
   } until (stack.is_null());
 
