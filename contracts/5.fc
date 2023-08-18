@@ -73,13 +73,15 @@
 
 }
 
-(tuple) make_result(int x, int y, int k, int kmin2) asm """
+global int glok;
+
+(tuple) make_result(int x, int y, int kmin2) asm """
   <{
-    s2 s1 PUSH2
+    DUP2
     ADD
-    SWAP
   }> PUSHCONT
   REPEAT
+  1 GETGLOB
   TUPLEVAR
 """;
 
@@ -109,6 +111,7 @@
     return tpush(empty_tuple(), x);
   }
 
-  return make_result(x, y, k, k - 2);
+  glok = k;
+  return make_result(x, y, k - 2);
 }
 
