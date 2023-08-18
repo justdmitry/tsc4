@@ -40,29 +40,35 @@ global slice source;
   if (source.slice_empty?()) {
     return (false, tail);
   }
-
-  var havebits = source.slice_bits();
-
-  ifnot (havebits) {
-    source = source~load_ref().begin_parse();
-    return getData(tail, len);
-  }
-
+  
   var b = begin_cell();
   
   ifnot (null?(tail)) {
     b = b.store_slice(tail);
   }
-  
-  var canload = min(b.builder_remaining_bits(), havebits);
-  tail = b.store_slice(source~load_bits(canload)).end_cell().begin_parse();
-  
-  if (tail.slice_canload_bits?(len))
-  {
-    return (true, tail);
+
+  while (true) {
+    if (b.builder_bits() >= len)
+    {
+      return (true, b.end_cell().begin_parse());
+    }
+    
+    var havebits = source.slice_bits();
+    if (havebits) {
+      var canload = min(b.builder_remaining_bits(), havebits);
+      b = b.store_slice(source~load_bits(canload));
+    }
+    else {
+      if (source.slice_refs()) {
+        source = source~load_ref().begin_parse();
+      }
+      else {
+        return (false, b.end_cell().begin_parse());
+      }
+    }
   }
   
-  return getData(tail, len);
+  return (false, tail);
 }
 
 ;; testable
