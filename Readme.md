@@ -1,3 +1,9 @@
+My final score: 5.4135504748981385 / 5.981117372715172 / 5.6432258876190735 / 5.868838415095676 / 5.908586976922385
+
+Total: 28.815, 15th place of 288 (nickname "JD").
+
+-----
+
 # 🏆 Welcome to the TON Smart Challenge #4
 ### by TON Foundation
 
